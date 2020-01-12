@@ -1,13 +1,18 @@
 package qdl
 
-import "time"
+import (
+	"time"
 
-// Record elementary data structure
+	"github.com/jinzhu/gorm"
+)
+
+// Record elementary data structure.
 type Record struct {
-	Date    time.Time
-	Ticker  string
-	Measure string
-	Value   float64
+	gorm.Model
+	Date    time.Time `gorm:"INDEX;NOT NULL"`
+	Ticker  string    `gorm:"INDEX;NOT NULL"`
+	Measure string    `gorm:"INDEX;NOT NULL"`
+	Value   float64   `gorm:"NOT NULL"`
 }
 
 // RecordProcessor knows how to process a Record

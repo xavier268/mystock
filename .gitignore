@@ -16,3 +16,6 @@
 
 # Ignore secrets ...
 **/secret.go
+
+# Igore db
+**/*.db

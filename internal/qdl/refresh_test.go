@@ -7,7 +7,7 @@ import (
 
 func TestMakeURL(t *testing.T) {
 
-	q := New()
+	q := NewQDL()
 	u := q.makeURLString(Code{"euronext", "hello"})
 	// fmt.Println(u.String())
 	if u != "https://www.quandl.com/api/v3/datasets/EURONEXT/HELLO/data.json?api_key="+APISecretKey {
@@ -17,10 +17,10 @@ func TestMakeURL(t *testing.T) {
 }
 
 func TestGetCode1(t *testing.T) {
-	q := New()
+	q := NewQDL()
 
 	// Valid - should not panic, but display records
-	q.Refresh(Code{"euronext", "adyen"}, printRecord)
+	q.Refresh(Code{"euronext", "adyen"}, doNothing)
 
 }
 
@@ -28,7 +28,7 @@ func TestGetCode2(t *testing.T) {
 	// Invalid - should panic
 	defer expectPanic(t)
 
-	q := New()
+	q := NewQDL()
 
 	q.Refresh(Code{"euronext", "testetst"}, printRecord)
 
@@ -49,4 +49,7 @@ func expectPanic(t *testing.T) {
 
 func printRecord(r Record) {
 	fmt.Println(r)
+}
+
+func doNothing(r Record) {
 }

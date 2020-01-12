@@ -17,7 +17,15 @@ type datasetModel struct {
 // expectedColumns provides a map of the columns expected to be found.
 func expectedColumns() map[string]bool {
 	m := make(map[string]bool)
-	for _, k := range [...]string{"Date", "Open", "Last", "High", "Low", "Volume", "Turnover"} {
+	for _, k := range [...]string{
+		"Date",
+		"Open",
+		"Last",
+		"High",
+		"Low",
+		"Volume",
+		"Turnover",
+	} {
 		m[k] = true
 	}
 	return m

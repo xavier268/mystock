@@ -2,7 +2,6 @@ package qdl
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -23,7 +22,7 @@ func (q *QDL) Refresh(code Code, process RecordProcessor) {
 
 	// check no error ?
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Request : %s\nStatus Code error : %s\n", u, resp.Status)
+		//fmt.Printf("Request : %s\nStatus Code error : %s\n", u, resp.Status)
 		panic(resp.Status)
 	}
 

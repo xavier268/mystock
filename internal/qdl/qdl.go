@@ -8,8 +8,8 @@ type QDL struct {
 	query url.Values
 }
 
-// New create a new QDL
-func New() *QDL {
+// NewQDL  create a new QDL
+func NewQDL() *QDL {
 	var e error
 	q := new(QDL)
 	q.url = "https://www.quandl.com/api/v3/datasets/"
