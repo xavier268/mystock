@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Refresh will refresh the historic data for the provided code
+// Refresh will refresh the historical data for the provided code
 // and apply the RecordProcessor to each Record.
 func (q *QDL) Refresh(code Code, process RecordProcessor) {
 
@@ -68,7 +68,7 @@ func (q *QDL) Refresh(code Code, process RecordProcessor) {
 		for c, s := range d.DatasetData.ColumnNames {
 			// create a record per value, excpet for Date
 			if c != 0 { // avoid Date ...
-				r := Record{}
+				r := new(Record)
 				r.Ticker = code.Ticker
 				r.Date = tt
 				r.Measure = s

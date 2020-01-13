@@ -1,6 +1,8 @@
 package qdl
 
 import (
+	"fmt"
+
 	"github.com/jinzhu/gorm"
 
 	// blank import used for sqlite
@@ -31,7 +33,10 @@ func newCacheDB(fname string) *CacheDB {
 	if err != nil {
 		panic(err)
 	}
-	c.db.AutoMigrate(&Record{})
+	err = c.db.AutoMigrate(&Record{}).Error
+	if err != nil {
+		panic(err)
+	}
 	return c
 }
 
@@ -39,4 +44,33 @@ func newCacheDB(fname string) *CacheDB {
 // Required after creating a new one.
 func (c *CacheDB) Close() {
 	c.db.Close()
+}
+
+// Update record.
+func (c *CacheDB) Update(r *Record) {
+	// fmt.Println("Updating : ", r)
+	err := c.db.Save(r).Error
+	if err != nil {
+		panic(err)
+	}
+}
+
+// Refresh the history for the provided tickers.
+func (c *CacheDB) Refresh(q *QDL, tickers ...string) {
+	if len(tickers) == 0 {
+		return
+	}
+	for _, t := range tickers {
+		q.Refresh(Code{"EURONEXT", t}, c.Update)
+	}
+}
+
+// Dump dumps the data base. Used for testing/debugging.
+func (c *CacheDB) Dump() {
+	var rr []Record
+	err := c.db.Find(&rr).Error
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(rr), " records in dbase\n", rr)
 }

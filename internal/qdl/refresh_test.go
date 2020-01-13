@@ -3,16 +3,22 @@ package qdl
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestMakeURL(t *testing.T) {
 
 	q := NewQDL()
 	u := q.makeURLString(Code{"euronext", "hello"})
-	// fmt.Println(u.String())
+	// fmt.Println(u)
 	if u != "https://www.quandl.com/api/v3/datasets/EURONEXT/HELLO/data.json?api_key="+APISecretKey {
 		t.Fatal(u)
 	}
+
+	// Adding start date
+	q.SetStartDate(time.Now())
+	u = q.makeURLString(Code{"euronext", "hello"})
+	fmt.Println(u)
 
 }
 
@@ -47,9 +53,9 @@ func expectPanic(t *testing.T) {
 	}
 }
 
-func printRecord(r Record) {
-	fmt.Println(r)
+func printRecord(r *Record) {
+	fmt.Println(*r)
 }
 
-func doNothing(r Record) {
+func doNothing(r *Record) {
 }

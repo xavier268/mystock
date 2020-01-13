@@ -2,18 +2,20 @@ package qdl
 
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 // Record elementary data structure.
+// Used to store in database cache.
 type Record struct {
-	gorm.Model
-	Date    time.Time `gorm:"INDEX;NOT NULL"`
-	Ticker  string    `gorm:"INDEX;NOT NULL"`
-	Measure string    `gorm:"INDEX;NOT NULL"`
-	Value   float64   `gorm:"NOT NULL"`
+	Date    time.Time `gorm:"primary_key"`
+	Ticker  string    `gorm:"primary_key"`
+	Measure string    `gorm:"primary_key"`
+
+	Value float64 `gorm:"NOT NULL"`
 }
 
+// Records are an array of Record
+type Records []Record
+
 // RecordProcessor knows how to process a Record
-type RecordProcessor func(Record)
+type RecordProcessor func(*Record)
