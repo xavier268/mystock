@@ -65,6 +65,16 @@ func (c *CacheDB) Refresh(q *QDL, tickers ...string) {
 	}
 }
 
+// Count total records in DB
+func (c *CacheDB) Count() int {
+	var count int
+	err := c.db.Model(&Record{}).Count(&count).Error
+	if err != nil {
+		panic(err)
+	}
+	return count
+}
+
 // Dump dumps the data base. Used for testing/debugging.
 func (c *CacheDB) Dump() {
 	var rr []Record
@@ -72,5 +82,14 @@ func (c *CacheDB) Dump() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(len(rr), " records in dbase\n", rr)
+	fmt.Printf(" %d records in dbase\n", len(rr))
+	for i, r := range rr {
+		fmt.Println(r)
+		if i >= 10 {
+			fmt.Println("... truncated ...")
+			break
+		}
+	}
+	fmt.Println()
+
 }
