@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestInsertOrder(t *testing.T) {
+func TestOrder(t *testing.T) {
 	c := NewMemoryDB()
 	defer c.Close()
 
@@ -16,7 +16,7 @@ func TestInsertOrder(t *testing.T) {
 	o := new(Order)
 	o.Ticker = "ML"
 	o.Date = time.Now()
-	o.Price = 110.3
+	o.Price = 100
 	o.Volume = 10
 	c.CreateOrder(o)
 	c.Dump()
@@ -24,5 +24,18 @@ func TestInsertOrder(t *testing.T) {
 		fmt.Println("Order count : ", n)
 		panic("Wrong db count !")
 	}
-
+	o = new(Order)
+	o.Ticker = "ML"
+	o.Date = time.Now()
+	o.Price = 50
+	o.Volume = 5
+	c.CreateOrder(o)
+	if _, n := c.Count(); n != 2 {
+		fmt.Println("Order count : ", n)
+		panic("Wrong db count !")
+	}
+	r := c.PortfolioHistValue()
+	if r != 5*50+10*100 {
+		panic("Wrong portfolio value")
+	}
 }

@@ -7,3 +7,11 @@ func (c *CacheDB) CreateOrder(o *Order) {
 		panic(err)
 	}
 }
+
+// PortfolioHistValue computes the historiacl value of the portfolio.
+func (c *CacheDB) PortfolioHistValue() float64 {
+	var res struct{ Total float64 }
+	c.db.Model(&Order{}).Select("SUM( price * volume ) as total ").Scan(&res)
+	//fmt.Println(res)
+	return res.Total
+}
