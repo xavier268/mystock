@@ -14,8 +14,5 @@ type Record struct {
 	Value float64 `gorm:"NOT NULL"`
 }
 
-// Records are an array of Record
-type Records []Record
-
 // RecordProcessor knows how to process a Record
 type RecordProcessor func(*Record)
