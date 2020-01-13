@@ -19,3 +19,6 @@
 
 # Igore db
 **/*.db
+
+#Ignore binaries
+bin/
