@@ -23,9 +23,9 @@ func TestUpdateRecord(t *testing.T) {
 	q := NewQDL().SetStartDate(time.Now().Add(-time.Hour * 24 * 5))
 	c.Refresh(q, "ML")
 	c.Dump()
-	c1 := c.Count()
+	c1, _ := c.Count()
 	c.Refresh(q, "ML")
-	c2 := c.Count()
+	c2, _ := c.Count()
 	if c1 != c2 {
 		t.Fatal("Count should not have changed - updates expected to be idempotent")
 	}

@@ -33,7 +33,7 @@ func newCacheDB(fname string) *CacheDB {
 	if err != nil {
 		panic(err)
 	}
-	err = c.db.AutoMigrate(&Record{}).Error
+	err = c.db.AutoMigrate(&Record{}, &Order{}).Error
 	if err != nil {
 		panic(err)
 	}
@@ -65,14 +65,18 @@ func (c *CacheDB) Refresh(q *QDL, tickers ...string) {
 	}
 }
 
-// Count total records in DB
-func (c *CacheDB) Count() int {
-	var count int
-	err := c.db.Model(&Record{}).Count(&count).Error
+// Count total records and order in DB
+func (c *CacheDB) Count() (nbR, nbO int) {
+
+	err := c.db.Model(&Record{}).Count(&nbR).Error
 	if err != nil {
 		panic(err)
 	}
-	return count
+	err = c.db.Model(&Order{}).Count(&nbO).Error
+	if err != nil {
+		panic(err)
+	}
+	return nbR, nbO
 }
 
 // Dump dumps the data base. Used for testing/debugging.
@@ -85,6 +89,19 @@ func (c *CacheDB) Dump() {
 	fmt.Printf(" %d records in dbase\n", len(rr))
 	for i, r := range rr {
 		fmt.Println(r)
+		if i >= 10 {
+			fmt.Println("... truncated ...")
+			break
+		}
+	}
+	var oo []Order
+	err = c.db.Find(&oo).Error
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf(" %d orders in dbase\n", len(oo))
+	for i, o := range oo {
+		fmt.Println(o)
 		if i >= 10 {
 			fmt.Println("... truncated ...")
 			break
