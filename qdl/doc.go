@@ -3,3 +3,5 @@
 // as a string constant in the secret.go file
 // (ignored by git).
 package qdl
+
+const APISecretKey = "secretKeyValue"
