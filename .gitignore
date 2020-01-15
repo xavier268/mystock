@@ -17,7 +17,7 @@
 # Ignore secrets ...
 **/secret.go
 
-# Igore db
+# Igore all .db files
 **/*.db
 
 #Ignore binaries
