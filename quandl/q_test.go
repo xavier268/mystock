@@ -11,14 +11,9 @@ func TestConstructQ(t *testing.T) {
 	New("euroNExt").WalkDataset("ML", doNothing)
 }
 
-func TestPanic(t *testing.T) {
+func TestConstructBadSerie(t *testing.T) {
 	defer expectPanic(t)
-	panic("test")
-}
-
-func TestConstructBadTicker(t *testing.T) {
-	defer expectPanic(t)
-	New("euroNExt").WalkDataset("wrongTicker", doNothing)
+	New("euroNExt").WalkDataset("wrongDataSerie", doNothing)
 }
 
 func TestConstructBadSource(t *testing.T) {

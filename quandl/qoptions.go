@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-// QOtions are options that can be
+// A QOption is an option that can be
 // provided when constructing a new Q.
 type QOption func(*Q)
 
-// OPtionStartDate sets the start date.
+// OptionStartDate sets the start date.
 func OptionStartDate(when time.Time) QOption {
 	return func(q *Q) {
 		q.query.Set("start_date", when.Format(layout))
@@ -29,7 +29,7 @@ var OptionOrderAsc QOption = func(q *Q) {
 }
 
 // OptionOrderDesc descending order.
-var OptionOderDesc QOption = func(q *Q) {
+var OptionOrderDesc QOption = func(q *Q) {
 	q.query.Set("order", "desc")
 }
 
@@ -52,7 +52,7 @@ const (
 	Annual    Frequency = "annual"
 )
 
-// Transfom defines transformations
+// A Transform defines transformations
 // to apply to data.
 type Transform string
 

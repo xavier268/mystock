@@ -17,6 +17,7 @@ type Q struct {
 	source  Source
 }
 
+// Version is the  api base url used.
 func (q *Q) Version() string {
 	return q.version
 }
@@ -49,7 +50,7 @@ func New(source Source, options ...QOption) *Q {
 // Source represent a source database in QUANDL.
 type Source string
 
-// ApiSecretKey is a hook function that provides
+// APISecretKey is a hook function that provides
 // the QUANDL api key upon request.
 // Redefine this function to provide your APISecretKey.
 // For instance, as an init :
@@ -66,10 +67,10 @@ var APISecretKey func() string
 const layout string = "2006-01-02"
 
 // WalkDataset will collect Records from
-// the source/ticker and process each
+// the source/data-serie and process each
 // record with the provided processor.
 func (q *Q) WalkDataset(
-	ticker string,
+	serie string,
 	processor RecordProcessor) {
 
 	// If processor is nil,
@@ -84,7 +85,7 @@ func (q *Q) WalkDataset(
 	u := q.version +
 		"datasets/" +
 		string(q.source) +
-		"/" + strings.ToUpper(ticker) +
+		"/" + strings.ToUpper(serie) +
 		".json?" +
 		q.query.Encode()
 
@@ -147,7 +148,7 @@ func (q *Q) WalkDataset(
 			if c != 0 { // avoid Date ...
 				r := new(Record)
 				r.Source = string(q.source)
-				r.Serie = ticker
+				r.Serie = serie
 				r.Date = tt
 				r.Measure = s
 				r.Value = dd[c].(float64)

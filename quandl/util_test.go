@@ -5,10 +5,14 @@ import (
 	"testing"
 )
 
+func TestPanic(t *testing.T) {
+	defer expectPanic(t)
+	panic("test")
+}
+
 func expectPanic(t *testing.T) {
-	fmt.Println("Panic recovery ...")
 	if r := recover(); r != nil {
-		fmt.Println("Panic was expected, ok !")
+		fmt.Println("Panic was expected, all is good !")
 	} else {
 		t.Fatal("Code should have panicked !?")
 	}
