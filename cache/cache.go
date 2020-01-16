@@ -42,17 +42,24 @@ func newCache(fname string) *Cache {
 	if err != nil {
 		panic(err)
 	}
-	err = c.db.AutoMigrate(&quandl.Record{}).Error
+	err = c.db.AutoMigrate(&quandl.Record{}, &ref{}).Error
 	if err != nil {
 		panic(err)
 	}
 	c.ref = make(map[string]time.Time)
+
+	// Restore saved refs if any from the db.
+	// That will avoid unnecessary refresh, and identify all Tickers.
+	c.restoreRefs()
+
 	return c
 }
 
 // Close the underlying database.
 // Required to flush the cache when file.
 func (c *Cache) Close() {
+	// save refs for the next time.
+	c.saveRefs()
 	c.db.Close()
 }
 
@@ -120,10 +127,25 @@ func (c *Cache) refresh(ticker string) bool {
 	return true
 }
 
-// save record in databse, updating if needed.
+// save record in database, updating if needed.
 func (c *Cache) saveRecord(r quandl.Record) {
 	err := c.db.Save(&r).Error
 	if err != nil {
 		panic(err)
 	}
+}
+
+// ListTickers will list the tickers managed in the cache in a thread safe way.
+func (c *Cache) ListTickers() []string {
+
+	c.refGuard.RLock()
+
+	res := make([]string, 0, len(c.ref))
+	for s := range c.ref {
+		res = append(res, s)
+	}
+
+	c.refGuard.RUnlock()
+
+	return res
 }
