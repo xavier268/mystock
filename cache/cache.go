@@ -127,33 +127,3 @@ func (c *Cache) saveRecord(r quandl.Record) {
 		panic(err)
 	}
 }
-
-// getLastRecord retrieve the last available
-// record for the selected ticker and measure.
-// Refresh as needed.
-func (c *Cache) getLastRecord(ticker string, measure Measure) quandl.Record {
-	c.refresh(ticker)
-	var r quandl.Record
-
-	err := c.db.Where(&quandl.Record{Serie: ticker, Measure: string(measure)}).Order("date desc").First(&r).Error
-	if err != nil {
-		fmt.Println(ticker, measure)
-		panic(err)
-	}
-	return r
-}
-
-// ListTickers will list the tickers managed in the cache in a thread safe way.
-func (c *Cache) ListTickers() []string {
-
-	c.refGuard.RLock()
-
-	res := make([]string, 0, len(c.ref))
-	for s := range c.ref {
-		res = append(res, s)
-	}
-
-	c.refGuard.RUnlock()
-
-	return res
-}

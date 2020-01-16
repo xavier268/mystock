@@ -23,7 +23,20 @@ func TestNewFileCache(t *testing.T) {
 	if c.Size() != 0 {
 		t.Fail()
 	}
+	c.Close() // before removing file ...
+	os.Remove(ftest)
+}
 
+func TestConstructLocalDB(t *testing.T) {
+	// Skip not to leave a db locally.
+	// t.Skip()
+	fmt.Println("Warning : this test may take a long time to run if the bd is not initialized yet")
+	c := NewCache()
+	defer c.Close()
+
+	// Fill wil ML & AIR
+	c.LastPrice("AIR")
+	c.LastPrice("ML")
 }
 
 func TestRetrieveValue(t *testing.T) {
@@ -59,5 +72,20 @@ func TestRetrieveValue(t *testing.T) {
 	if len(tt) != 1 {
 		fmt.Println("Ticker list : ", tt, "size : ", len(tt))
 		t.Fatal("unexcpected ticker list != 1")
+	}
+
+	p, lt := c.LastPrice("ML")
+	fmt.Println("Last price : ", p, lt)
+}
+
+func TestHighLow(t *testing.T) {
+	c := NewCache()
+	defer c.Close()
+
+	h, l := c.HighLowPrice("AIR", time.Now().Add(10*24*time.Hour))
+	fmt.Println("HighLow : ", h, l)
+	if h < l {
+		fmt.Println("High Low values : ", h, l)
+		t.Fatal("Inconsistent highLow")
 	}
 }
