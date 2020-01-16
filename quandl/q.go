@@ -147,10 +147,10 @@ func (q *Q) WalkDataset(
 			// create a record per value, excpet for Date
 			if c != 0 { // avoid Date ...
 				r := new(Record)
-				r.Source = string(q.source)
-				r.Serie = serie
+				r.Source = strings.ToUpper(string(q.source))
+				r.Serie = strings.ToUpper(serie)
 				r.Date = tt
-				r.Measure = s
+				r.Measure = strings.ToUpper(s)
 				r.Value = dd[c].(float64)
 				processor(*r) // emit or process created record
 			}
