@@ -1,0 +1,40 @@
+{
+    "Comment" : [
+        "========== comments are ignored ===========",
+        "This is an example mystock configuration file.",
+        "You have to provide a similar file either through the commanf line flags,",
+        "or by naming it **mystock.json** in one of the usual locations (see code)",
+        "As you will see below, time formats can be use with a lot of flexibility ...",
+        "" ],
+    "APISecretKey" : "Set your own API Key here ...",
+    "SNSTopic" : "arn:aws:sns:eu-west-1:xxxxxxxxxxx",
+    "Lines" :   [
+            {
+                "Comments" : ["Here also, comments are ignored ...",
+                            "Lines define the various lines of shares on hand",
+                            ""],
+                "Name" : "Michelin",
+                "Ticker" : "ML",
+                "Date" : "2019-12-25",
+                "Volume" : 3,
+                "Price" : 100.3
+            },
+            {
+                "Comments" : "Airbus",
+                "Name" :  "Airbus",
+                "Ticker" : "AIR",
+                "Date" : "2019-07-15 00:00:00 +0000 UTC",
+                "Volume" : 10,
+                "Price" : 100.3
+            },
+            {
+                "Comments" : "Airbus again ...",
+                "Name" :  "Airbus",
+                "Ticker" : "AIR",
+                "Date" : "2019-7-1",
+                "Volume" : 2,
+                "Price" : 103.83
+            }
+        ]
+    
+}
