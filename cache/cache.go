@@ -16,6 +16,8 @@ import (
 type Cache struct {
 	// database for caching
 	db *gorm.DB
+	// apiKey to access quandl
+	apiKey string
 	// Map from the ticker symbol to the last sucessful refresh.
 	ref map[string]time.Time
 	// protects the access to the map.
@@ -23,21 +25,22 @@ type Cache struct {
 }
 
 // NewCache creates a new file-based cache, locally.
-func NewCache() *Cache {
-	return newCache("mystock.db")
+func NewCache(apiKey string) *Cache {
+	return newCache(apiKey, "mystock.db")
 }
 
 // NewMemoryCache creates a Cache in memory.
 // Mainly used for testing.
-func NewMemoryCache() *Cache {
-	return newCache(":memory:")
+func NewMemoryCache(apiKey string) *Cache {
+	return newCache(apiKey, ":memory:")
 }
 
 // newCache actually creates and initialize the cache.
-func newCache(fname string) *Cache {
+func newCache(apiKey, fname string) *Cache {
 	var err error
 
 	c := new(Cache)
+	c.apiKey = apiKey
 	c.db, err = gorm.Open("sqlite3", fname)
 	if err != nil {
 		panic(err)
@@ -119,7 +122,7 @@ func (c *Cache) refresh(ticker string) bool {
 
 	// do the actual refresh
 	// refresh locked during this refresh.
-	quandl.New("EURONEXT").WalkDataset(ticker, c.saveRecord)
+	quandl.New(c.apiKey, "EURONEXT").WalkDataset(ticker, c.saveRecord)
 	c.ref[ticker] = time.Now()
 
 	// release lock

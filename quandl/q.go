@@ -26,7 +26,7 @@ func (q *Q) Version() string {
 // The source (eg : EURONEXT) is regquired.
 // Existing Q may be used multiple times
 // to query different time series from the same Source.
-func New(source Source, options ...QOption) *Q {
+func New(apiKey string, source Source, options ...QOption) *Q {
 
 	if len(source) == 0 {
 		panic("quandl source cannot be empty")
@@ -43,25 +43,12 @@ func New(source Source, options ...QOption) *Q {
 
 	// add the key
 	q.query = make(url.Values)
-	q.query.Set("api_key", APISecretKey())
+	q.query.Set("Api_Key", apiKey)
 	return q
 }
 
 // Source represent a source database in QUANDL.
 type Source string
-
-// APISecretKey is a hook function that provides
-// the QUANDL api key upon request.
-// Redefine this function to provide your APISecretKey.
-// For instance, as an init :
-//
-//  func init() {
-// 	fmt.Println("Initialising API secret key")
-// 	APISecretKey = func() string {
-// 		return "mysecretkey"
-// 	}
-// }
-var APISecretKey func() string
 
 // layout used to format time to/from strings.
 const layout string = "2006-01-02"

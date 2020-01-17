@@ -10,13 +10,13 @@ import (
 var ftest = "test.db"
 
 func TestNewMemoryCache(t *testing.T) {
-	c := NewMemoryCache()
+	c := NewMemoryCache(mysecret)
 	defer c.Close()
 }
 
 func TestNewFileCache(t *testing.T) {
 	os.Remove(ftest)
-	c := newCache(ftest)
+	c := newCache(mysecret, ftest)
 	defer c.Close()
 	c.Dump()
 	if c.Size() != 0 {
@@ -30,7 +30,7 @@ func TestConstructLocalDB(t *testing.T) {
 	// Skip not to leave a db locally.
 	// t.Skip()
 	fmt.Println("Warning : this test may take a long time to run if the bd is not initialized yet")
-	c := NewCache()
+	c := NewCache(mysecret)
 	defer c.Close()
 
 	// Fill wil ML & AIR

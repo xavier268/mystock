@@ -49,8 +49,8 @@ func (c *Cache) HighLowPrice(ticker string, since time.Time) (high, low float64)
 
 // getAverage gets the average for the given measure over the period.
 // Use zero value or time.Now() for the dates, as needed.
-func (c *Cache) getAverage(ticker string, measure Measure) float64 {
+func (c *Cache) getAverage(ticker string, measure Measure, since time.Time) float64 {
 
 	// TODO
-	return 0.
+	panic("Not implemented yet")
 }

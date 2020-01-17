@@ -7,7 +7,7 @@ import (
 )
 
 func TestRetrieveValue(t *testing.T) {
-	c := NewMemoryCache()
+	c := NewMemoryCache(mysecret)
 	defer c.Close()
 
 	tt := c.ListTickers()
@@ -46,7 +46,7 @@ func TestRetrieveValue(t *testing.T) {
 }
 
 func TestHighLowPrices(t *testing.T) {
-	c := NewCache()
+	c := NewCache(mysecret)
 	defer c.Close()
 
 	// Since 5 days

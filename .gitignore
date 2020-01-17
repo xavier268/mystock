@@ -16,6 +16,8 @@
 
 # Ignore secrets ...
 **/secret.go
+**/secret_test.go
+
 
 # Igore all .db files
 **/*.db
