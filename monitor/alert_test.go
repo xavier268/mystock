@@ -2,7 +2,8 @@ package monitor
 
 import "testing"
 
-func TestAlerts(t *testing.T) {
+func TestAlertLog(t *testing.T) {
+
 	var err error
 	err = AlertLog()("")
 	if err != nil {
@@ -13,5 +14,16 @@ func TestAlerts(t *testing.T) {
 		t.Fatal(err)
 	}
 	err = AlertLog()(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
 
+func TestAlertSNS(t *testing.T) {
+
+	c := loadConfiguration()
+	err := AlertSNS(c.SNSTopic)("Message SMS de test")
+	if err != nil {
+		t.Fatal(err)
+	}
 }

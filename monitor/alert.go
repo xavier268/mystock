@@ -63,7 +63,7 @@ func AlertSNS(snsTopic string) Alert {
 			os.Exit(1)
 		}
 
-		fmt.Println(*result.MessageId)
+		fmt.Println("Message envoyé :", *result.MessageId)
 
 		return err
 	}
