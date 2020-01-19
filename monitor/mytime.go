@@ -7,8 +7,8 @@ import (
 )
 
 // MyTime wraps the time.Time object so
-// that it can be Unmarshalled/marshalled
-// from a simpler layout 2006/01/02 ...
+// that it can be unmarshalled to json
+// using different layout.
 type MyTime struct {
 	time.Time
 }
