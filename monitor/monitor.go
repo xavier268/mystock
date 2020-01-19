@@ -12,14 +12,12 @@ type Monitor struct {
 	// the portfolio we monitor
 	porfolio []configuration.Line
 	// how we access market and historical data and prices
-	cache cache.Cache
+	cache *cache.Cache
 	// The checks we have to perform while monitoring.
 	checks []Check
 	// How do we send messages to alert us about stock price changes
 	// Should ignore empty messages.
 	alert Alert
-	// APIScretKey for quandl
-	secretQuandl string
 	// SNS Alert Notification topic
 	topicSNS string
 }
@@ -37,11 +35,17 @@ type Alert func(interface{}) error
 // The portfolio is initialized from the configuration file.
 // The cache is created, and the local databse created as needed.
 func NewMonitor(alert Alert, checks ...Check) *Monitor {
-	m := new(Monitor)
-	m.topicSNS = "arn:aws:sns:eu-west-1:057259519792:mystock"
 
-	panic("Not implemented")
-	// return m
+	conf := configuration.Load()
+	m := new(Monitor)
+	m.porfolio = conf.Lines
+	m.cache = cache.NewCache(conf)
+	m.cache.Refresh()
+	m.checks = checks
+	m.alert = alert
+	m.topicSNS = conf.SNSTopic
+
+	return m
 }
 
 // Run the Monitor, performing regular checks.

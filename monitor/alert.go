@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -59,11 +58,10 @@ func AlertSNS(snsTopic string) Alert {
 			TopicArn: aws.String(snsTopic),
 		})
 		if err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
+			return err
 		}
 
-		fmt.Println("Message envoyé :", *result.MessageId)
+		fmt.Println("Message sent :", *result.MessageId)
 
 		return err
 	}

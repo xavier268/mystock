@@ -81,12 +81,30 @@ func (c *Cache) Size() (n int) {
 // Used for testing/debugging.
 func (c *Cache) Dump() {
 	var rr []quandl.Record
+	var rfs []ref
+
+	// dump records
 	err := c.DB.Find(&rr).Error
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("There are  %d records in dbase\n", len(rr))
 	for i, r := range rr {
+		fmt.Println(r)
+		if i >= 10 {
+			fmt.Println("... truncated ...")
+			break
+		}
+	}
+	fmt.Println()
+
+	// dump refs
+	err = c.DB.Find(&rfs).Error
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("There are  %d refs in dbase\n", len(rfs))
+	for i, r := range rfs {
 		fmt.Println(r)
 		if i >= 10 {
 			fmt.Println("... truncated ...")
@@ -125,7 +143,7 @@ func (c *Cache) refresh(ticker string) bool {
 	// at least 6 hour between refreshes.
 	c.refGuard.RLock()
 	last, ok := c.ref[ticker]
-	if ok && last.Add(6*time.Hour).After(time.Now()) {
+	if ok && (last != time.Time{}) && last.Add(6*time.Hour).After(time.Now()) {
 		// no refresh needed
 		c.refGuard.RUnlock()
 		return false
