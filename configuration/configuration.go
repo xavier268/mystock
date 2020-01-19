@@ -1,4 +1,4 @@
-package monitor
+package configuration
 
 import (
 	"encoding/json"
@@ -8,15 +8,15 @@ import (
 	"path"
 )
 
-// configuration as read from configuration file.
-type configuration struct {
+// Conf as read from configuration file.
+type Conf struct {
 	Lines        []Line
 	APISecretKey string
 	SNSTopic     string
 }
 
-// loadConfiguration from the mystock.json file.
-func loadConfiguration() configuration {
+// Load from the mystock.json configuration file.
+func Load() Conf {
 
 	var err error
 
@@ -26,23 +26,21 @@ func loadConfiguration() configuration {
 	fn := "mystock.json"
 
 	where := []string{
-		"secret_test.json", // for testing
-		"secret.json",      // for testing
+		"secret_test.json",
+		path.Join("..", "configuration", "secret_test.json"), // for testing
+
 		fn,
 		path.Join(".", fn),
 		path.Join("..", fn),
 		path.Join("..", "..", fn),
-		path.Join("..", "..", "..", fn),
-		path.Join("..", "conf", fn),
-		path.Join("..", "..", "conf", fn)}
+		path.Join("..", "configuration", fn),
+		path.Join("..", "..", "configuration", fn)}
 
 	user, okuser := os.LookupEnv("USER")
 	if okuser {
 		where = append(where,
 			path.Join(user, fn),
-			path.Join(user, "conf", fn),
 			path.Join(user, ".mystock", fn),
-			path.Join(user, "mystock", fn),
 		)
 	}
 
@@ -62,7 +60,7 @@ func loadConfiguration() configuration {
 		panic("unable to find the configuration file ! ")
 	}
 
-	conf := new(configuration)
+	conf := new(Conf)
 	err = json.Unmarshal(cb, conf)
 	if err != nil {
 		fmt.Println(err, conf)
@@ -71,4 +69,34 @@ func loadConfiguration() configuration {
 	fmt.Println("Configuration successfully parsed")
 	return *conf
 
+}
+
+// Line defines a line of the shares portfolio
+type Line struct {
+	// Informative, human readable name
+	Name string
+	// Unique ticker identifying the  stock shares
+	Ticker string
+	// Date of purchase - use special type to allow easier unmarshalling
+	Date MyTime
+	// Historical/average purchase price
+	Price float64
+	// number of shares
+	Volume float64
+}
+
+// Tickers returns the list of Tickers
+// mentionned in the configuration.
+// This is mostly used to cache them initially.
+func (c *Conf) Tickers() []string {
+	tl := make([]string, 0)
+	m := make(map[string]bool)
+
+	for _, l := range c.Lines {
+		if _, ok := m[l.Ticker]; !ok {
+			tl = append(tl, l.Ticker)
+			m[l.Ticker] = true
+		}
+	}
+	return tl
 }

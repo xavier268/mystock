@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/xavier268/mystock/configuration"
 	"github.com/xavier268/mystock/quandl"
 
 	// blank import used for sqlite
@@ -15,7 +16,7 @@ import (
 // Cache is the DB access object used to cach or retrieve data.
 type Cache struct {
 	// database for caching
-	db *gorm.DB
+	*gorm.DB
 	// apiKey to access quandl
 	apiKey string
 	// Map from the ticker symbol to the last sucessful refresh.
@@ -25,27 +26,27 @@ type Cache struct {
 }
 
 // NewCache creates a new file-based cache, locally.
-func NewCache(apiKey string) *Cache {
-	return newCache(apiKey, "mystock.db")
+func NewCache(conf configuration.Conf) *Cache {
+	return newCache(conf, "mystock.db")
 }
 
 // NewMemoryCache creates a Cache in memory.
 // Mainly used for testing.
-func NewMemoryCache(apiKey string) *Cache {
-	return newCache(apiKey, ":memory:")
+func NewMemoryCache(conf configuration.Conf) *Cache {
+	return newCache(conf, ":memory:")
 }
 
 // newCache actually creates and initialize the cache.
-func newCache(apiKey, fname string) *Cache {
+func newCache(conf configuration.Conf, fname string) *Cache {
 	var err error
 
 	c := new(Cache)
-	c.apiKey = apiKey
-	c.db, err = gorm.Open("sqlite3", fname)
+	c.apiKey = conf.APISecretKey
+	c.DB, err = gorm.Open("sqlite3", fname)
 	if err != nil {
 		panic(err)
 	}
-	err = c.db.AutoMigrate(&quandl.Record{}, &ref{}).Error
+	err = c.DB.AutoMigrate(&quandl.Record{}, &ref{}).Error
 	if err != nil {
 		panic(err)
 	}
@@ -63,12 +64,12 @@ func newCache(apiKey, fname string) *Cache {
 func (c *Cache) Close() {
 	// save refs for the next time.
 	c.saveRefs()
-	c.db.Close()
+	c.DB.Close()
 }
 
 // Size provides count of total records in cache.
 func (c *Cache) Size() (n int) {
-	err := c.db.Model(&quandl.Record{}).Count(&n).Error
+	err := c.DB.Model(&quandl.Record{}).Count(&n).Error
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +80,7 @@ func (c *Cache) Size() (n int) {
 // Used for testing/debugging.
 func (c *Cache) Dump() {
 	var rr []quandl.Record
-	err := c.db.Find(&rr).Error
+	err := c.DB.Find(&rr).Error
 	if err != nil {
 		panic(err)
 	}
@@ -94,6 +95,15 @@ func (c *Cache) Dump() {
 	fmt.Println()
 }
 
+// Refresh the cache, if needed, for all tickers.
+func (c *Cache) Refresh() {
+
+	lt := c.ListTickers()
+	for _, t := range lt {
+		c.refresh(t)
+	}
+}
+
 // refresh refresh the cache for the provided record.
 // If cache was still fresh, do nothing, return false.
 // Retun true if actual refresh happened.
@@ -103,6 +113,13 @@ func (c *Cache) refresh(ticker string) bool {
 	if len(ticker) == 0 {
 		panic("cannot refresh an empty string ticker")
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Could not refresh cache : ", r)
+		}
+	}()
+
 	// check if refresh is needed ...
 	// at least 6 hour between refreshes.
 	c.refGuard.RLock()
@@ -116,7 +133,7 @@ func (c *Cache) refresh(ticker string) bool {
 	// change for rw lock
 	c.refGuard.RUnlock()
 	c.refGuard.Lock()
-
+	defer c.refGuard.Unlock()
 	// debug
 	fmt.Println("Refreshing ", ticker)
 
@@ -125,20 +142,19 @@ func (c *Cache) refresh(ticker string) bool {
 	quandl.New(c.apiKey, "EURONEXT").WalkDataset(ticker, c.saveRecord)
 	c.ref[ticker] = time.Now()
 
-	// release lock
-	c.refGuard.Unlock()
 	return true
 }
 
 // save record in database, updating if needed.
 func (c *Cache) saveRecord(r quandl.Record) {
-	err := c.db.Save(&r).Error
+	err := c.DB.Save(&r).Error
 	if err != nil {
 		panic(err)
 	}
 }
 
-// ListTickers will list the tickers managed in the cache in a thread safe way.
+// ListTickers will list the tickers managed
+// in the cache in a thread safe way.
 func (c *Cache) ListTickers() []string {
 
 	c.refGuard.RLock()

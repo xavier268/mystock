@@ -4,15 +4,16 @@ import (
 	"context"
 
 	"github.com/xavier268/mystock/cache"
+	"github.com/xavier268/mystock/configuration"
 )
 
 // Monitor allows to monitor share price evolution and send alerts.
 type Monitor struct {
 	// the portfolio we monitor
-	porfolio Portfolio
+	porfolio []configuration.Line
 	// how we access market and historical data and prices
 	cache cache.Cache
-	// The checks we have to perform on a regular basis.
+	// The checks we have to perform while monitoring.
 	checks []Check
 	// How do we send messages to alert us about stock price changes
 	// Should ignore empty messages.

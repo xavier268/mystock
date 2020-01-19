@@ -17,7 +17,7 @@ func (c *Cache) saveRefs() {
 	c.refGuard.RLock()
 	for r := range c.ref {
 		ref := ref{r, c.ref[r]}
-		err := c.db.Save(ref).Error
+		err := c.DB.Save(ref).Error
 		if err != nil {
 			panic(err)
 		}
@@ -28,7 +28,7 @@ func (c *Cache) saveRefs() {
 // Restore refs from database, during init.
 func (c *Cache) restoreRefs() {
 	var refs []ref
-	err := c.db.Model(&ref{}).Find(&refs).Error
+	err := c.DB.Model(&ref{}).Find(&refs).Error
 	if err != nil {
 		fmt.Println("could not restore ref map ?!")
 		panic(err)

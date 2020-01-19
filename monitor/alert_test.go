@@ -1,6 +1,10 @@
 package monitor
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/xavier268/mystock/configuration"
+)
 
 func TestAlertLog(t *testing.T) {
 
@@ -21,7 +25,7 @@ func TestAlertLog(t *testing.T) {
 
 func TestAlertSNS(t *testing.T) {
 
-	c := loadConfiguration()
+	c := configuration.Load()
 	err := AlertSNS(c.SNSTopic)("Message SMS de test")
 	if err != nil {
 		t.Fatal(err)

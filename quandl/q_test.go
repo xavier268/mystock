@@ -3,26 +3,28 @@ package quandl
 import (
 	"fmt"
 	"testing"
+
+	"github.com/xavier268/mystock/configuration"
 )
 
 func TestAPISecretKeyConfigured(t *testing.T) {
 	// This will fail if secret key is not configured.
 	// Make it available in secret_test.go
-	fmt.Println("Test secret key used : ", mysecret)
+	fmt.Println("Test secret key used : ", configuration.Load().APISecretKey)
 }
 
 func TestConstructQ(t *testing.T) {
-	New(mysecret, "euroNExt").WalkDataset("ML", doNothing)
+	New(configuration.Load().APISecretKey, "euroNExt").WalkDataset("ML", doNothing)
 }
 
 func TestConstructBadSerie(t *testing.T) {
 	defer expectPanic(t)
-	New(mysecret, "euroNExt").WalkDataset("wrongDataSerie", doNothing)
+	New(configuration.Load().APISecretKey, "euroNExt").WalkDataset("wrongDataSerie", doNothing)
 }
 
 func TestConstructBadSource(t *testing.T) {
 	defer expectPanic(t)
-	New(mysecret, "badSource").WalkDataset("ML", doNothing)
+	New(configuration.Load().APISecretKey, "badSource").WalkDataset("ML", doNothing)
 }
 
 // This test is skipped, because, surpirsingly,
