@@ -54,7 +54,8 @@ func newCache(conf configuration.Conf, fname string) *Cache {
 
 	// Restore saved refs if any from the db.
 	// That will avoid unnecessary refresh, and identify all Tickers.
-	c.restoreRefs()
+	// Extract tickers from config file as default tickers.
+	c.restoreRefs(conf.Tickers()...)
 
 	return c
 }

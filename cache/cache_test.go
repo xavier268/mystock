@@ -18,14 +18,15 @@ func TestNewMemoryCache(t *testing.T) {
 
 func TestNewFileCache(t *testing.T) {
 	os.Remove(ftest)
+	defer os.Remove(ftest)
+
 	c := newCache(configuration.Load(), ftest)
 	defer c.Close()
+
 	c.Dump()
 	if c.Size() != 0 {
 		t.Fail()
 	}
-	c.Close() // before removing file ...
-	os.Remove(ftest)
 }
 
 func TestConstructLocalDB(t *testing.T) {

@@ -15,6 +15,8 @@ type ref struct {
 func (c *Cache) saveRefs() {
 
 	c.refGuard.RLock()
+	defer c.refGuard.RUnlock()
+
 	for r := range c.ref {
 		ref := ref{r, c.ref[r]}
 		err := c.DB.Save(ref).Error
@@ -22,11 +24,13 @@ func (c *Cache) saveRefs() {
 			panic(err)
 		}
 	}
-	c.refGuard.RUnlock()
+
 }
 
 // Restore refs from database, during init.
-func (c *Cache) restoreRefs() {
+// A list fo initial tickers can be provided, that will be set
+// as not fresh.
+func (c *Cache) restoreRefs(confTickers ...string) {
 	var refs []ref
 	err := c.DB.Model(&ref{}).Find(&refs).Error
 	if err != nil {
@@ -34,6 +38,11 @@ func (c *Cache) restoreRefs() {
 		panic(err)
 	}
 	c.refGuard.Lock()
+	// Load predefined default tickers
+	for _, t := range confTickers {
+		c.ref[t] = time.Time{}
+	}
+	// Restore Tickers from database
 	for _, r := range refs {
 		c.ref[r.Ticker] = r.When
 	}
