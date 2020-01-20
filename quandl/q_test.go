@@ -3,6 +3,7 @@ package quandl
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/xavier268/mystock/configuration"
 )
@@ -15,6 +16,9 @@ func TestAPISecretKeyConfigured(t *testing.T) {
 
 func TestConstructQ(t *testing.T) {
 	New(configuration.Load().APISecretKey, "euroNExt").WalkDataset("ML", doNothing)
+}
+func TestConstructQWithSince(t *testing.T) {
+	New(configuration.Load().APISecretKey, "euroNExt", OptionStartDate(time.Now())).WalkDataset("ML", doNothing)
 }
 
 func TestConstructBadSerie(t *testing.T) {

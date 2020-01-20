@@ -27,14 +27,19 @@ func Load() Conf {
 
 	where := []string{
 		"secret_test.json",
-		path.Join("..", "configuration", "secret_test.json"), // for testing
+		path.Join("configuration", "secret_test.json"),                   // for testing
+		path.Join("..", "configuration", "secret_test.json"),             // for testing
+		path.Join("..", "..", "configuration", "secret_test.json"),       // for testing
+		path.Join("..", "..", "..", "configuration", "secret_test.json"), // for testing
 
 		fn,
 		path.Join(".", fn),
 		path.Join("..", fn),
 		path.Join("..", "..", fn),
+		path.Join("configuration", fn),
 		path.Join("..", "configuration", fn),
-		path.Join("..", "..", "configuration", fn)}
+		path.Join("..", "..", "configuration", fn),
+		path.Join("..", "..", "..", "configuration", fn)}
 
 	user, okuser := os.LookupEnv("USER")
 	if okuser {

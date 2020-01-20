@@ -146,14 +146,20 @@ func (c *Cache) refresh(ticker string) bool {
 	last, ok := c.ref[ticker]
 	if ok && (last != time.Time{}) && last.Add(6*time.Hour).After(time.Now()) {
 		// no refresh needed
+		fmt.Println("No refresh needed for " + ticker)
 		c.refGuard.RUnlock()
 		return false
 	}
 	c.refGuard.RUnlock()
+	fmt.Println("Preparing to refresh " + ticker)
 
 	// Query most recent ticker date,
 	// with a few days to be sure ...
-	since := c.MostRecent(ticker).Add(-3 * 24 * time.Hour)
+	since := c.MostRecent(ticker)
+	if (since != time.Time{}) {
+		since = since.Add(-3 * 24 * time.Hour)
+	}
+	fmt.Println("Refresh needed since " + since.String())
 
 	// Set rw lock
 	c.refGuard.Lock()
@@ -166,7 +172,6 @@ func (c *Cache) refresh(ticker string) bool {
 	quandl.New(c.apiKey, "EURONEXT", quandl.OptionStartDate(since)).
 		WalkDataset(ticker, c.saveRecord)
 	c.ref[ticker] = time.Now()
-
 	return true
 }
 
@@ -210,6 +215,9 @@ func (c *Cache) MostRecent(ticker string) time.Time {
 		Find(&rr).Error
 	if err != nil {
 		panic(err)
+	}
+	if len(rr) == 0 {
+		return time.Time{}
 	}
 	return rr[0].Date
 }

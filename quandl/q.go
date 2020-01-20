@@ -36,13 +36,15 @@ func New(apiKey string, source Source, options ...QOption) *Q {
 
 	q.version = "https://www.quandl.com/api/v3/"
 
+	// Init q.query map
+	q.query = make(url.Values)
+
 	// apply the options ...
 	for _, opt := range options {
 		opt(q)
 	}
 
 	// add the key
-	q.query = make(url.Values)
 	q.query.Set("Api_Key", apiKey)
 	return q
 }

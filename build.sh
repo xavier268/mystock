@@ -6,5 +6,5 @@ echo "Base folder detected as :" $BASE
 MYBIN=$BASE/bin/
 
 
-mkdir $MYBIN
+mkdir -p $MYBIN
 go build -o $MYBIN $BASE/... 
