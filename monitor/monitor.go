@@ -10,7 +10,7 @@ import (
 // Monitor allows to monitor share price evolution and send alerts.
 type Monitor struct {
 	// the portfolio we monitor
-	porfolio []configuration.Line
+	lines []configuration.Line
 	// how we access market and historical data and prices
 	cache *cache.Cache
 	// The checks we have to perform while monitoring.
@@ -37,8 +37,9 @@ type Alert func(interface{}) error
 func NewMonitor(alert Alert, checks ...Check) *Monitor {
 
 	conf := configuration.Load()
+	
 	m := new(Monitor)
-	m.porfolio = conf.Lines
+	m.lines = conf.Lines
 	m.cache = cache.NewCache(conf)
 	m.cache.Refresh()
 	m.checks = checks
