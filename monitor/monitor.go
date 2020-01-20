@@ -33,11 +33,11 @@ type Alert func(interface{}) error
 
 // NewMonitor creates and initialize a new Monitor object.
 // The portfolio is initialized from the configuration file.
-// The cache is created, and the local databse created as needed.
+// The cache is created, and the local database created as needed.
 func NewMonitor(alert Alert, checks ...Check) *Monitor {
 
 	conf := configuration.Load()
-	
+
 	m := new(Monitor)
 	m.lines = conf.Lines
 	m.cache = cache.NewCache(conf)
