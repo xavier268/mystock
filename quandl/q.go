@@ -86,13 +86,9 @@ func (q *Q) WalkDataset(
 	if err != nil {
 		panic(err)
 	}
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Unexpected http status :", resp.StatusCode, resp.Status)
-		panic(resp.Status)
-	}
+	defer resp.Body.Close()
 
 	// Decode body into datasetModel
-	defer resp.Body.Close()
 	var d datasetModel
 	err = json.NewDecoder(resp.Body).Decode(&d)
 	if err != nil {
@@ -101,6 +97,16 @@ func (q *Q) WalkDataset(
 
 	// debug
 	// fmt.Println(d)
+
+	// Check for quandl errors
+	if resp.StatusCode != http.StatusOK {
+		// Dump debugging information ...
+		// fmt.Println(resp)
+		fmt.Println("Unexpected http status :", resp.StatusCode, resp.Status)
+		fmt.Println(d.QuandlError.Code, d.QuandlError.Message)
+		fmt.Println(d)
+		panic(resp.Status)
+	}
 
 	// Check expected columns are where
 	// they should be ...
@@ -115,6 +121,7 @@ func (q *Q) WalkDataset(
 			}
 		}
 	*/
+
 	// Expect first column to be date.
 	if len(d.Dataset.ColumnNames) == 0 ||
 		d.Dataset.ColumnNames[0] != "Date" {

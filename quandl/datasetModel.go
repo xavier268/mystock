@@ -12,6 +12,10 @@ type datasetModel struct {
 		Frequency   string          `json:"frequency"`
 		Data        [][]interface{} `json:"data"`
 	} `json:"dataset"`
+	QuandlError struct {
+		Code    string `jsn:"code"`
+		Message string `jsn:"message"`
+	} `json:"quandl_error"`
 }
 
 // expectedColumns provides a map of the columns expected to be found.
