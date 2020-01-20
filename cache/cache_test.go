@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/xavier268/mystock/configuration"
 )
@@ -38,4 +39,23 @@ func TestConstructLocalDB(t *testing.T) {
 
 	// Refresh all
 	c.Refresh()
+}
+
+func TestMostRecent(t *testing.T) {
+	c := NewCache(configuration.Load())
+	defer c.Close()
+
+	//c.DB.LogMode(true)
+	t1 := c.MostRecent("AIR")
+	if (t1 == time.Time{}) {
+		c.Dump()
+		fmt.Println("Most recent AIR time : ", t1)
+		t.Fatal("Inconsistent time for AIR")
+	}
+
+	t2 := c.MostRecent("NOTHING")
+	if (t2 != time.Time{}) {
+		t.Fatal("Nil time expected !")
+	}
+
 }

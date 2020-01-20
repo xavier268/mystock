@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -148,9 +149,13 @@ func (c *Cache) refresh(ticker string) bool {
 		c.refGuard.RUnlock()
 		return false
 	}
-
-	// change for rw lock
 	c.refGuard.RUnlock()
+
+	// Query most recent ticker date,
+	// with a few days to be sure ...
+	since := c.MostRecent(ticker).Add(-3 * 24 * time.Hour)
+
+	// Set rw lock
 	c.refGuard.Lock()
 	defer c.refGuard.Unlock()
 	// debug
@@ -158,7 +163,8 @@ func (c *Cache) refresh(ticker string) bool {
 
 	// do the actual refresh
 	// refresh locked during this refresh.
-	quandl.New(c.apiKey, "EURONEXT").WalkDataset(ticker, c.saveRecord)
+	quandl.New(c.apiKey, "EURONEXT", quandl.OptionStartDate(since)).
+		WalkDataset(ticker, c.saveRecord)
 	c.ref[ticker] = time.Now()
 
 	return true
@@ -186,4 +192,24 @@ func (c *Cache) ListTickers() []string {
 	c.refGuard.RUnlock()
 
 	return res
+}
+
+// MostRecent is the most recent date for that ticker in the database.
+func (c *Cache) MostRecent(ticker string) time.Time {
+
+	// If ticker is not known, return zero value time.
+	if _, ok := c.ref[ticker]; !ok {
+		return time.Time{}
+	}
+
+	var rr []quandl.Record
+	err := c.DB.Model(&quandl.Record{}).
+		Where("serie = ?", strings.ToUpper(ticker)).
+		Order("date DESC").
+		Limit(1).
+		Find(&rr).Error
+	if err != nil {
+		panic(err)
+	}
+	return rr[0].Date
 }
