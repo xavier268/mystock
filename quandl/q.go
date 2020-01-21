@@ -45,7 +45,7 @@ func New(apiKey string, source Source, options ...QOption) *Q {
 	}
 
 	// add the key
-	q.query.Set("Api_Key", apiKey)
+	q.query.Set("api_key", apiKey)
 	return q
 }
 
