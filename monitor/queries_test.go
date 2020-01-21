@@ -2,21 +2,9 @@ package monitor
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 )
-
-var m *Monitor
-
-func TestMain(t *testing.M) {
-	m = NewMonitor(nil)
-	// DEBUG : Setting logmode will display actual sql
-	// m.cache.DB.LogMode(true)
-	e := t.Run()
-	m.Close()
-	os.Exit(e)
-}
 
 func TestMonitorConstructed(t *testing.T) {
 	m.cache.Dump()

@@ -77,6 +77,7 @@ func Load() Conf {
 }
 
 // Line defines a line of the shares portfolio
+// as they are described in the mystock.json file
 type Line struct {
 	// Informative, human readable name
 	Name string
