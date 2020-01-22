@@ -3,7 +3,6 @@ package monitor
 import (
 	"fmt"
 
-	"github.com/xavier268/mystock/configuration"
 	"github.com/xavier268/mystock/quandl"
 )
 
@@ -20,7 +19,7 @@ type VLine struct {
 
 // Portfolio constructs and updates a portfolio object
 // from the current Monitor object.
-func (m *Monitor) Portfolio(configuration.Conf) Portfolio {
+func (m *Monitor) LoadPortfolio() Portfolio {
 
 	var pf Portfolio = make(Portfolio)
 
@@ -52,6 +51,15 @@ func (pf Portfolio) Dump() {
 		}
 	}
 	fmt.Println()
+}
+
+// GainLoss calcultae the gain or loss of the portfolio.
+func (pf Portfolio) GainLoss() (gl float64) {
+
+	for _, v := range pf {
+		gl += v.LastTurnover - v.HistTurnover
+	}
+	return gl
 }
 
 // LastClosingPrice last known closing price (in cache) for ticker.
