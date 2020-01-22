@@ -7,4 +7,6 @@ MYBIN=$BASE/bin/
 
 
 mkdir -p $MYBIN
-go build -o $MYBIN $BASE/... 
+go build -o ${MYBIN} $BASE/... 
+chmod +x ${MYBIN}mystock
+

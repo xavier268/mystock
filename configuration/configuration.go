@@ -62,6 +62,10 @@ func Load() Conf {
 	}
 
 	if err != nil {
+		fmt.Println("============================================================================================")
+		fmt.Println("Make sure you create a configuration named mystock.json in a reasonnable location (see above).")
+		fmt.Println("You may copy/rename the file mystock_example.json and modify its content.")
+		fmt.Println("============================================================================================")
 		panic("unable to find the configuration file ! ")
 	}
 
