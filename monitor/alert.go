@@ -78,7 +78,7 @@ func ignoreAlert(message interface{}) bool {
 
 	// ignore interface{} that prints as an empty string
 	if s := fmt.Sprint(message); len(s) == 0 {
-		fmt.Println("DEBUG : Empty string alert message ingnored ...")
+		fmt.Println("DEBUG : Empty string alert message ignored ...")
 		return true
 	}
 	return false

@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"io"
 	"strings"
 	"sync"
 	"time"
@@ -13,6 +14,9 @@ import (
 	// blank import used for sqlite
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
+
+// Compiler contract check.
+var _ io.Closer = new(Cache)
 
 // Cache is the DB access object used to cach or retrieve data.
 type Cache struct {
@@ -63,10 +67,10 @@ func newCache(conf configuration.Conf, fname string) *Cache {
 
 // Close the underlying database.
 // Required to flush the cache when file.
-func (c *Cache) Close() {
+func (c *Cache) Close() error {
 	// save refs for the next time.
 	c.saveRefs()
-	c.DB.Close()
+	return c.DB.Close()
 }
 
 // Size provides count of total records in cache.

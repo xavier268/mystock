@@ -17,18 +17,27 @@ type VLine struct {
 	Volume       float64
 }
 
-// Portfolio constructs and updates a portfolio object
+// LoadPortfolio constructs and updates a portfolio object
 // from the current Monitor object.
 func (m *Monitor) LoadPortfolio() Portfolio {
 
 	var pf Portfolio = make(Portfolio)
 
+	// DEBUG
+	// fmt.Println("DEBUG LoadPortfolio, m.lines = ", m.lines)
+
 	for _, l := range m.lines {
+		// Load existing earlier values,
+		// if multiple lines with same ticker
 		var vl VLine = pf[l.Ticker]
+
 		vl.Volume += l.Volume
 		vl.HistTurnover += l.Volume * l.Price
 		p := m.LastClosingPrice(l.Ticker)
 		vl.LastTurnover += l.Volume * p
+
+		// Update portfolio with incremented values.
+		pf[l.Ticker] = vl
 	}
 	return pf
 }
@@ -53,13 +62,14 @@ func (pf Portfolio) Dump() {
 	fmt.Println()
 }
 
-// GainLoss calcultae the gain or loss of the portfolio.
-func (pf Portfolio) GainLoss() (gl float64) {
-
+// Values calculates the total historical (purchase) and last
+// values of the portfolio.
+func (pf Portfolio) Values() (hist, last float64) {
 	for _, v := range pf {
-		gl += v.LastTurnover - v.HistTurnover
+		hist += v.HistTurnover
+		last += v.LastTurnover
 	}
-	return gl
+	return hist, last
 }
 
 // LastClosingPrice last known closing price (in cache) for ticker.
