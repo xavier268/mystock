@@ -44,14 +44,18 @@ func CheckPriceChange(ticker string, percent float64) Check {
 // CheckPriceChangeAll will check for price change line by line.
 // retun a function that will aggregate the per-ticker functions.
 func CheckPriceChangeAll(percent float64) Check {
-	return func(m *Monitor) (mess string, e error) {
+	return func(m *Monitor) (string, error) {
+		var mess string
 		p := m.LoadPortfolio()
 		for t := range p {
+			// fmt.Println("DEBUG : checking on ", t)
 			s, e := CheckPriceChange(t, percent)(m)
 			if e != nil {
-				return mess, e
+				mess += "\nERROR : " + e.Error()
 			}
-			mess = "\n" + s
+			if len(s) != 0 {
+				mess += "\n" + s
+			}
 		}
 		return mess, nil
 	}
