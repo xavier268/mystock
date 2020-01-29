@@ -28,7 +28,7 @@ func Load() Conf {
 	// where defines the possible location to look for
 	// the configuration file, in that order.
 	// Only the first file found will be processed.
-	fn := "mystock.json"
+	const fn = "mystock.json"
 
 	where := []string{
 		"secret_test.json",
@@ -140,7 +140,7 @@ func readFromS3(fileName string) ([]byte, error) {
 
 	result, err := svc.GetObject(input)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fileName, err)
 		return nil, err
 	}
 
