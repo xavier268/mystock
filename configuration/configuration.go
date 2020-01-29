@@ -6,6 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/endpoints"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // Conf as read from configuration file.
@@ -50,25 +55,36 @@ func Load() Conf {
 	}
 
 	var cb []byte
-	fmt.Println("Attempting to load configuration file from : ")
-
-	for _, f := range where {
-		fmt.Println("\t", f)
-		cb, err = ioutil.ReadFile(f)
-		if err == nil {
-			fmt.Println("Found usable configuration file : ", f)
-			break
-		}
-	}
+	fmt.Println("Attempting to load configuration from aws S3")
+	cb, err = readFromS3(fn)
 
 	if err != nil {
-		fmt.Println("============================================================================================")
-		fmt.Println("Make sure you create a configuration named mystock.json in a reasonnable location (see above).")
-		fmt.Println("You may copy/rename the file mystock_example.json and modify its content.")
-		fmt.Println("============================================================================================")
-		panic("unable to find the configuration file ! ")
+		// S3 download failed, so let's try local files ?
+		fmt.Println("Attempt to download configuration from AWS-S3 failed !")
+		fmt.Println("Attempting to load configuration from local file : ")
+
+		for _, f := range where {
+			fmt.Println("\t", f)
+			cb, err = ioutil.ReadFile(f)
+			if err == nil {
+				fmt.Println("Found usable configuration file : ", f)
+				break
+			}
+		}
+
+		if err != nil {
+			fmt.Println("============================================================================================")
+			fmt.Println("Make sure you create a configuration named mystock.json in a reasonnable location (see above).")
+			fmt.Println("You may copy/rename the file mystock_example.json and modify its content.")
+			fmt.Println("============================================================================================")
+			panic("unable to find the configuration file ! ")
+		}
+
+	} else {
+		fmt.Println("Successfully loaded configuration from aws s3 object : ", fn)
 	}
 
+	// Parse config from cb []bytes
 	conf := new(Conf)
 	err = json.Unmarshal(cb, conf)
 	if err != nil {
@@ -109,4 +125,30 @@ func (c *Conf) Tickers() []string {
 		}
 	}
 	return tl
+}
+
+// readFromS3 attempts getting a []byte from s3 object.
+func readFromS3(fileName string) ([]byte, error) {
+
+	svc := s3.New(session.New(&aws.Config{
+		Region: aws.String(endpoints.EuWest1RegionID),
+	}))
+	input := &s3.GetObjectInput{
+		Bucket: aws.String("xavier268.gandillot.com"),
+		Key:    aws.String(fileName),
+	}
+
+	result, err := svc.GetObject(input)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	defer result.Body.Close()
+	cb, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return cb, nil
 }
