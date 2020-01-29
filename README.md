@@ -1,3 +1,5 @@
+[![Documentation](https://godoc.org/github.com/xavier268/mystock?status.svg)](http://godoc.org/github.com/xavier268/mystock)
+
 # mystock
 My personal portfolio stock tracking.
 
