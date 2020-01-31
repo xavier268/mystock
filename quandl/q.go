@@ -139,17 +139,19 @@ func (q *Q) WalkDataset(
 		}
 
 		// create/set records
-		for c, s := range d.Dataset.ColumnNames {
+		// Don't assume all fields are availble
+		// (sometimes, turnover and volume are not !)
+		for c := 1; c < len(dd); c++ {
+			s := d.Dataset.ColumnNames[c]
 			// create a record per value, excpet for Date
-			if c != 0 { // avoid Date ...
-				r := new(Record)
-				r.Source = strings.ToUpper(string(q.source))
-				r.Serie = strings.ToUpper(serie)
-				r.Date = tt
-				r.Measure = strings.ToUpper(s)
-				r.Value = dd[c].(float64)
-				processor(*r) // emit or process created record
-			}
+			// Date was skipped ... (c =0)
+			r := new(Record)
+			r.Source = strings.ToUpper(string(q.source))
+			r.Serie = strings.ToUpper(serie)
+			r.Date = tt
+			r.Measure = strings.ToUpper(s)
+			r.Value = dd[c].(float64)
+			processor(*r) // emit or process created record
 		}
 	}
 
