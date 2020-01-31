@@ -21,9 +21,9 @@
 **/secret_test.json
 
 
-# Igore all .db files
+# Ignore all .db files
 **/*.db
 **/*.db-journal
 
-#Ignore binaries
-bin/
+# Ignore binaries
+# bin/
