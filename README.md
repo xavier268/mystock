@@ -10,3 +10,5 @@ My personal portfolio stock tracking.
 * Alerts and notification (SMS and/or stdout) are triggered if needed
 
 
+Binaries are available for Windows & Linux.
+( add/create your own configuration file !)
