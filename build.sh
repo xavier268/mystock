@@ -11,6 +11,6 @@ go build -o ${MYBIN}mystock $BASE/cmd/mystock/
 chmod +x ${MYBIN}mystock
 
 echo "Building windows version"
-GOOS=windows GOARCH=amd64 go build -o ${MYBIN}mystock.exe $BASE/cmd/mystock/
-chmod +x ${MYBIN}mystock
+# Note that cgo and the related cross-comile options are needed !
+GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC="x86_64-w64-mingw32-gcc" CXX="x86_64-w64-mingw32-g++" go build -o ${MYBIN}mystock.exe $BASE/cmd/mystock/
 
